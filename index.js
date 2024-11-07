@@ -5,7 +5,7 @@ import photoRouter from './routes/photos.js';
 import userRouter from './routes/users.js';
 
 
-await mongoose.connect(process.env.MONGO_URI)
+await mongoose.connect(process.env.MONGO_URI).then(() => console.log("Database connected.")).catch((error) => console.log("Error connecitng the the databse", error))
 
 const app = express();
 

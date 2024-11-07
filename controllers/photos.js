@@ -4,6 +4,7 @@ import { addPhotoValidator, updatePhotoValidator } from "../validators/photos.js
 
 export const addPhoto = async (req, res, next) => {
     try {
+        console.log("request body-->", req.body)
         const { error, value } = addPhotoValidator.validate({
             ...req.body,
             image: req.file?.filename,

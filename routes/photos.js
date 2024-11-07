@@ -1,7 +1,7 @@
 import { Router } from "express";
-import {addPhoto, getPhoto, getPhotos, updatePhoto, deletePhoto, countPhotos} from "../controllers/photos.js";
-import {photoImageUpload} from "../middlewares/uploads.js";
-import {isAuthenticated, hasPermission} from "../middlewares/auth.js";
+import { addPhoto, getPhoto, getPhotos, updatePhoto, deletePhoto, countPhotos } from "../controllers/photos.js";
+import { photoImageUpload } from "../middlewares/uploads.js";
+import { isAuthenticated, hasPermission } from "../middlewares/auth.js";
 
 
 const photoRouter = Router();
@@ -12,9 +12,9 @@ photoRouter.post('/photos', isAuthenticated, hasPermission('add_photo'), photoIm
 
 photoRouter.get('/photos', getPhotos);
 
-photoRouter.get('/adverts/:id', getPhoto)
+photoRouter.get('/photos/:id', getPhoto)
 
-photoRouter.patch('/adverts/:id', isAuthenticated, hasPermission('update_photo'),photoImageUpload.single('image'), updatePhoto);
+photoRouter.patch('/photos/:id', isAuthenticated, hasPermission('update_photo'), photoImageUpload.single('image'), updatePhoto);
 
 photoRouter.delete('/photos/:id', isAuthenticated, hasPermission('delete_photo'), deletePhoto);
 

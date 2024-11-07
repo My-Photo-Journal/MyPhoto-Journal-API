@@ -4,7 +4,7 @@ import { permissions } from "../utils/rbac.js";
 
 
 export const isAuthenticated = expressjwt({
-    secret: 'hgbfjuykuhgkuyk',
+    secret: process.env.JWT_PRIVATE_KEY,
     algorithms: ["HS256"],
     // requestProperty: 'auth'
 });
