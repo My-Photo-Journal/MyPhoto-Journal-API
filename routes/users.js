@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {registerUser, loginUser, getProfile, updateProfile, getUserPhotos} from "../controllers/users.js";
+import {registerUser, loginUser, getProfile, updateProfile, getUserPhotos, deletePhoto} from "../controllers/users.js";
 import {userAvatarUpload} from "../middlewares/uploads.js";
 import {isAuthenticated, hasPermission} from "../middlewares/auth.js";
 
@@ -15,5 +15,7 @@ userRouter.get('/users/me', isAuthenticated, getProfile);
 userRouter.get('/users/me/photos', isAuthenticated, getUserPhotos);
 
 userRouter.patch('/users/me', isAuthenticated, hasPermission('update_profile'), userAvatarUpload.single('avatar'), updateProfile);
+
+userRouter.delete('/users/me', isAuthenticated, hasPermission('delete_profile'), userAvatarUpload.single('avatar'), deletePhoto)
 
 export default userRouter;

@@ -1,4 +1,4 @@
-import { registerUserValidator, loginUserValidator, updateProfileValidator } from "../validators/users.js";
+import { registerUserValidator, loginUserValidator, updateProfileValidator, deletePhotoValidator } from "../validators/users.js";
 import { UserModel } from "../models/users.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -102,6 +102,23 @@ export const getUserPhotos = async (req, res, next) => {
 }
 
 export const updateProfile = async (req, res, next) => {
+    try {
+        const { error, value } = updateProfileValidator.validate({
+            ...req.body,
+            avatar: req.file?.filename
+        });
+        if (error) {
+            return res.status(422).json(error);
+        }
+        await UserModel.findByIdAndUpdate(req.auth.id, value);
+        res.json('User Profile updated');
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export const deletePhoto = async (req, res, next) => {
     try {
         const { error, value } = updateProfileValidator.validate({
             ...req.body,

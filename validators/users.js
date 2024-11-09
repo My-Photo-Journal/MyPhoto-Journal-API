@@ -21,3 +21,9 @@ export const updateProfileValidator = Joi.object({
     lastName: Joi.string(),
     avatar: Joi.string()
 });
+
+
+export const deletePhotoValidator = Joi.object({
+    firstname: Joi.string(),
+    lastName: Joi.string(),
+});
