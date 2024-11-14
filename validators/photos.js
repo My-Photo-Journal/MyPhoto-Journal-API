@@ -15,11 +15,7 @@ export const updatePhotoValidator = Joi.object({
     image: Joi.string()
 });
 
-
-export const deletePhotoValidator = Joi.object({
-    title: Joi.string(),
-    description: Joi.string(),
-    category: Joi.string(),
-    image: Joi.string()
+export const photoIdValidator = Joi.object({
+    id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required()
 });
 

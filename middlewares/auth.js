@@ -2,13 +2,11 @@ import { expressjwt } from "express-jwt";
 import { UserModel } from "../models/users.js";
 import { permissions } from "../utils/rbac.js";
 
-
 export const isAuthenticated = expressjwt({
     secret: process.env.JWT_PRIVATE_KEY,
     algorithms: ["HS256"],
-    // requestProperty: 'auth'
+    requestProperty: 'auth'
 });
-
 
 export const hasPermission =
     (action) => {

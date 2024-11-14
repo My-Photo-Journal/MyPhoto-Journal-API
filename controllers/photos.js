@@ -48,9 +48,18 @@ export const getPhotos = async (req, res, next) => {
 
 export const countPhotos = async (req, res, next) => {
     try {
-        const { } = req.body;
-        const count = await PhotoModel.countDocuments(JSON.parse(filter));
-        res.json({ count })
+        const { title, category } = req.query;
+        let filter = {};
+        
+        if (title) {
+            filter.title = { $regex: title, $options: 'i' };
+        }
+        if (category) {
+            filter.category = category;
+        }
+
+        const count = await PhotoModel.countDocuments(filter);
+        res.json({ count });
     } catch (error) {
         next(error);
     }
@@ -59,9 +68,19 @@ export const countPhotos = async (req, res, next) => {
 
 export const getPhoto = async (req, res, next) => {
     try {
-        const { id } = req.params;
-        const photo = await PhotoModel.findById(id);
-        res.json(advert);
+        const { error, value } = photoIdValidator.validate({ id: req.params.id });
+        if (error) {
+            return res.status(422).json(error);
+        }
+        
+        const photo = await PhotoModel.findById(value.id);
+        if (!photo) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Photo not found'
+            });
+        }
+        res.json(photo);
     } catch (error) {
         next(error);
     }
@@ -77,8 +96,28 @@ export const updatePhoto = async (req, res, next) => {
         if (error) {
             return res.status(422).json(error);
         }
-        const photo = await PhotoModel.findByIdAndUpdate(req.params.id, value);
-        res.json('Photo updated');
+        
+        const photo = await PhotoModel.findOneAndUpdate(
+            { 
+                _id: req.params.id,
+                user: req.auth.id  // Ensure user owns the photo
+            },
+            value,
+            { new: true }
+        );
+
+        if (!photo) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Photo not found or unauthorized'
+            });
+        }
+
+        res.json({
+            status: 'success',
+            message: 'Photo updated successfully',
+            photo
+        });
     } catch (error) {
         next(error);
     }
@@ -88,8 +127,22 @@ export const updatePhoto = async (req, res, next) => {
 
 export const deletePhoto = async (req, res, next) => {
     try {
-        await PhotoModel.findByIdAndDelete(req.params.id);
-        res.json('Photo deleted successfully');
+        const photo = await PhotoModel.findOneAndDelete({
+            _id: req.params.id,
+            user: req.auth.id  // Ensure user owns the photo
+        });
+
+        if (!photo) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Photo not found or unauthorized'
+            });
+        }
+
+        res.json({
+            status: 'success',
+            message: 'Photo deleted successfully'
+        });
     } catch (error) {
         next(error);
     }
