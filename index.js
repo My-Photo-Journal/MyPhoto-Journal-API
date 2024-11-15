@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import photoRouter from './routes/photos.js';
+import eventRouter from './routes/events.js';
 import userRouter from './routes/users.js';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
@@ -26,7 +27,7 @@ const limiter = rateLimit({
 
 const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 5 // limit each IP to 5 login attempts per hour
+    max: 20 // limit each IP to 20 login attempts per hour
 });
 
 // Apply rate limiters
@@ -36,6 +37,7 @@ app.use('/users/register', authLimiter);
 
 // Routes
 app.use(photoRouter);
+app.use(eventRouter);
 app.use(userRouter);
 
 // Error handling middleware

@@ -9,6 +9,10 @@ export const permissions = [
         'update_photo',
         'delete_photo',
         'view_photos',
+        'add_event',
+        'update_event',
+        'delete_event',
+        'view_event',
         'manage_own_photos',]
 },
 

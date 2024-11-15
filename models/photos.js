@@ -4,7 +4,7 @@ import { toJSON } from "@reis/mongoose-to-json";
 const photoSchema = new Schema({
     title: { type: String, required: true },
     description: { type: String },
-    category: { type: String },
+    event: { type: Schema.Types.ObjectId, required: true, ref: 'Event' },
     image: { type: String },
     user: { type: Schema.Types.ObjectId, required: true, ref: 'User' }
 
@@ -14,7 +14,8 @@ const photoSchema = new Schema({
 
 photoSchema.index({
     title: 'text',
-    category: 'text'
+    photo: 'text',
+
 });
 
 photoSchema.plugin(toJSON);

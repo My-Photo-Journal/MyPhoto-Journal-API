@@ -19,4 +19,3 @@ photoRouter.patch('/photos/:id', isAuthenticated, hasPermission('update_photo'),
 photoRouter.delete('/photos/:id', isAuthenticated, hasPermission('delete_photo'), deletePhoto);
 
 export default photoRouter;
-

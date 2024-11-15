@@ -3,7 +3,7 @@ import Joi from "joi";
 export const addPhotoValidator = Joi.object({
     title: Joi.string().required(),
     description: Joi.string(),
-    category: Joi.string(),
+    event: Joi.string(),
     image: Joi.string(),
 });
 
@@ -11,7 +11,7 @@ export const addPhotoValidator = Joi.object({
 export const updatePhotoValidator = Joi.object({
     title: Joi.string(),
     description: Joi.string(),
-    category: Joi.string(),
+    event: Joi.string(),
     image: Joi.string()
 });
 
