@@ -54,7 +54,12 @@ export const loginUser = async (req, res, next) => {
                 message: 'User does not exist!'
             });
         }
-        
+        if (!user.isConfirmed) {
+            return res.status(401).json({
+                status: 'error',
+                message: 'Please confirm your email before logging in'
+            });
+        }
         const correctPassword = bcrypt.compareSync(value.password, user.password);
         if (!correctPassword) {
             return res.status(401).json({

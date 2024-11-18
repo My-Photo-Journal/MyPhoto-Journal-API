@@ -16,7 +16,8 @@ export const photoImageUpload = multer({
     }),
     fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 5 * 1024 * 1024, // 5MB limit per file
+        files: 10 // Maximum 10 files at once
     },
     preservePath: true
 });

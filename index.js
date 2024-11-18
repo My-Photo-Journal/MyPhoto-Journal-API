@@ -40,9 +40,51 @@ app.use(photoRouter);
 app.use(eventRouter);
 app.use(userRouter);
 
+// 404 handler
+app.use((req, res, next) => {
+    res.status(404).json({
+        status: 'error',
+        message: 'Route not found'
+    });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err);
+
+    // Handle Joi validation errors
+    if (err.isJoi) {
+        return res.status(422).json({
+            status: 'error',
+            message: 'Validation error',
+            details: err.details
+        });
+    }
+
+    // Handle Multer errors
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+            status: 'error',
+            message: 'File too large, maximum size is 5MB'
+        });
+    }
+
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Too many files, maximum is 10 files'
+        });
+    }
+
+    // Handle MongoDB duplicate key error
+    if (err.code === 11000) {
+        return res.status(409).json({
+            status: 'error',
+            message: 'Duplicate entry found'
+        });
+    }
+
+    // Default error
     res.status(err.status || 500).json({
         status: 'error',
         message: err.message || 'Internal Server Error'
