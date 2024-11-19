@@ -16,7 +16,12 @@ const app = express();
 
 // Security middleware should come first
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*', // Replace with your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Rate limiters
@@ -88,6 +93,15 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500).json({
         status: 'error',
         message: err.message || 'Internal Server Error'
+    });
+});
+
+// Add after your routes
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(err.status || 500).json({
+        status: 'error',
+        message: err.message || 'Internal server error'
     });
 });
 

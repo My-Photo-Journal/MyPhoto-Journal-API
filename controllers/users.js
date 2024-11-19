@@ -10,7 +10,7 @@ import crypto from 'crypto';
 
 export const registerUser = async (req, res, next) => {
     try {
-        const { error, value } = registerUserValidator.validate({...req.body, avatar: req.file?.filename});
+        const { error, value } = registerUserValidator.validate({ ...req.body, avatar: req.file?.filename });
         if (error) {
             return res.status(422).json(error);
         }
@@ -29,7 +29,7 @@ export const registerUser = async (req, res, next) => {
             password: hashedPassword,
             confirmationToken,
             confirmationTokenExpires,
-            isConfirmed: false
+            isConfirmed: true
         });
         await sendConfirmationEmail(value.email, confirmationToken, value.firstName);
         res.status(201).json({
@@ -45,47 +45,52 @@ export const loginUser = async (req, res, next) => {
     try {
         const { error, value } = loginUserValidator.validate(req.body);
         if (error) {
-            return res.status(422).json(error);
+            return res.status(422).json({
+                status: 'error',
+                message: error.details[0].message
+            });
         }
+
         const user = await UserModel.findOne({ email: value.email });
         if (!user) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'User does not exist!'
-            });
-        }
-        if (!user.isConfirmed) {
             return res.status(401).json({
                 status: 'error',
-                message: 'Please confirm your email before logging in'
+                message: 'Invalid email or password'
             });
         }
+
         const correctPassword = bcrypt.compareSync(value.password, user.password);
         if (!correctPassword) {
             return res.status(401).json({
                 status: 'error',
-                message: 'Invalid credentials'
+                message: 'Invalid email or password'
             });
         }
-        const token = jwt.sign(
+
+        // Generate token
+        const accessToken = jwt.sign(
             { id: user.id },
             process.env.JWT_PRIVATE_KEY,
             { expiresIn: '24h' }
         );
-        res.json({
+
+        // Send response
+        res.status(200).json({
             status: 'success',
-            message: 'User logged in successfully',
+            message: 'Login successful',
             data: {
-                accessToken: token,
+                accessToken,
                 user: {
-                    id: user.id,
-                    email: user.email,
+                    id: user._id,
                     firstName: user.firstName,
-                    lastName: user.lastName
+                    lastName: user.lastName,
+                    email: user.email,
+                    role: user.role
                 }
             }
         });
     } catch (error) {
+        console.error('Login error:', error);  // Add logging
         next(error);
     }
 };
@@ -108,7 +113,8 @@ export const getUserPhotos = async (req, res, next) => {
         if (title) {
             filter.title = {
                 $regex:
-                    title, $options: 'i'};
+                    title, $options: 'i'
+            };
         }
         if (category) {
             filter.category = category;
@@ -151,7 +157,7 @@ export const deletePhoto = async (req, res, next) => {
         if (error) {
             return res.status(422).json(error);
         }
-        
+
         const photo = await PhotoModel.findOneAndDelete({
             _id: value.photoId,
             user: req.auth.id
@@ -170,7 +176,7 @@ export const deletePhoto = async (req, res, next) => {
 export const confirmEmail = async (req, res) => {
     try {
         const { token } = req.params;
-        
+
         const user = await UserModel.findOne({
             confirmationToken: token,
             confirmationTokenExpires: { $gt: Date.now() }
