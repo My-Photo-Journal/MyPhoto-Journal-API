@@ -16,37 +16,37 @@ const formatPhotoResponse = (photo) => ({
 
 export const addPhotos = async (req, res, next) => {
     try {
-        if (!req.files || req.files.length === 0) {
+        console.log("Request file:", req.file);
+        
+        if (!req.file) {
             return res.status(400).json({
                 status: 'error',
-                message: 'No photos uploaded'
+                message: 'No image file provided. Please upload an image file.'
             });
         }
 
-        const photos = await Promise.all(req.files.map(async (file) => {
-            const { error, value } = addPhotoValidator.validate({
-                ...req.body,
-                image: file.filename,
+        const { error, value } = addPhotoValidator.validate({
+            ...req.body,
+            image: req.file.filename
+        });
+
+        if (error) {
+            return res.status(422).json({
+                status: 'error',
+                message: error.details[0].message
             });
-            
-            if (error) {
-                throw error;
-            }
+        }
 
-            return {
-                ...value,
-                user: req.auth.id
-            };
-        }));
-
-        const savedPhotos = await PhotoModel.insertMany(photos);
+        const photo = await PhotoModel.create({
+            ...value,
+            user: req.auth.id
+        });
 
         res.status(201).json({
             status: 'success',
-            message: `${savedPhotos.length} photos were added successfully`,
-            data: savedPhotos
+            message: 'Photo uploaded successfully',
+            data: photo
         });
-
     } catch (error) {
         next(error);
     }
@@ -57,7 +57,7 @@ export const getPhotos = async (req, res, next) => {
     try {
         const { title, event, limit = 10, skip = 0, sort = '{"createdAt":-1}' } = req.query;
         let filter = {};
-        
+
         if (title) {
             filter.$text = { $search: title };
         }

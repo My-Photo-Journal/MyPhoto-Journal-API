@@ -8,16 +8,18 @@ const photoRouter = Router();
 
 photoRouter.get('/photos/count', countPhotos)
 
-photoRouter.post('/photos', isAuthenticated, hasPermission('add_photo'), photoImageUpload.array('images', 10), addPhotos);
+// for single photo upload
+photoRouter.post('/photos', isAuthenticated, hasPermission('add_photo'), photoImageUpload.single('image'), addPhotos);
+
+// for multiple upload
+photoRouter.post('/photos/multiple', isAuthenticated, hasPermission('add_photo'), photoImageUpload.array('images', 10), addPhotos);
 
 photoRouter.get('/photos', getPhotos);
-
 photoRouter.get('/photos/:id', getPhoto)
-
 photoRouter.patch('/photos/:id', isAuthenticated, hasPermission('update_photo'), photoImageUpload.single('image'), updatePhoto);
-
 photoRouter.delete('/photos/:id', isAuthenticated, hasPermission('delete_photo'), deletePhoto);
 
+// favrorite routes
 photoRouter.post('/photos/:id/favorite', isAuthenticated, favoritePhoto);
 photoRouter.delete('/photos/:id/favorite', isAuthenticated, unfavoritePhoto);
 photoRouter.get('/photos/favorites', isAuthenticated, getFavoritePhotos);
