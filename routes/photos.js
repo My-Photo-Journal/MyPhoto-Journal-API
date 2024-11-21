@@ -12,7 +12,7 @@ photoRouter.get('/photos/count', countPhotos)
 photoRouter.post('/photos', isAuthenticated, hasPermission('add_photo'), photoImageUpload.single('image'), addPhotos);
 
 // for multiple upload
-photoRouter.post('/photos/multiple', isAuthenticated, hasPermission('add_photo'), photoImageUpload.array('images', 10), addPhotos);
+photoRouter.post('/photos/multiple', isAuthenticated, hasPermission('add_photo'), photoImageUpload.array('images', 100), addPhotos);
 
 photoRouter.get('/photos', getPhotos);
 photoRouter.get('/photos/:id', getPhoto)

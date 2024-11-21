@@ -142,3 +142,19 @@ export const deleteEvent = async (req, res, next) => {
         next(error);
     }
 };
+
+
+export const getUserEvents = async (req, res, next) => {
+    try {
+        const events = await EventModel.find({ user: req.auth.id })
+            .sort({ createdAt: -1 })
+            .populate('user', 'firstName lastName');
+
+        res.json({
+            status: 'success',
+            data: events
+        });
+    } catch (error) {
+        next(error);
+    }
+};
