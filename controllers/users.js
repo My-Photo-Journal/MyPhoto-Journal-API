@@ -108,7 +108,7 @@ export const getProfile = async (req, res, next) => {
 
 export const getUserPhotos = async (req, res, next) => {
     try {
-        const { title, category, limit = 10, skip = 0, sort = "{}" } = req.query;
+        const { title, category, limit = 200, skip = 0, sort = "{}" } = req.query;
         let filter = {};
         if (title) {
             filter.title = {
