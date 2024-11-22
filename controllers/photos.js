@@ -55,7 +55,7 @@ export const addPhotos = async (req, res, next) => {
 
 export const getPhotos = async (req, res, next) => {
     try {
-        const { title, event, limit = 10, skip = 0, sort = '{"createdAt":-1}' } = req.query;
+        const { title, event, limit = 200, skip = 0, sort = '{"createdAt":-1}' } = req.query;
         let filter = {};
 
         if (title) {
